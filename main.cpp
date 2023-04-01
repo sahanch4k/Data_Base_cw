@@ -15,7 +15,7 @@ int enter_main()
     int number = 0;
     while (number == 0)
     {
-        cout << "Пожалуйста введите число для выбора операции.\n1 - чтобы выйти; 2 - чтобы добавить лекарство; 3 - чтобы сделать отчет о побочных эффектах; 4 - чтобы добавить пациента;\n5 - чтобы добавить новый прием; 6 - чтобы определить колличество больных выбранной болезнью;\n7 - чтобы определить число вызовов в выбранный день; 8 - чтобы сделать справку о вызовах.\n";
+        cout << "Please enter number to select operation.\n1 - to exit; 2 - to enter patient; 3 - to add new medicine to the database; 4 - to make a report about side effects; \n5 - to enter new appointments; 6 - to determine the number of appointmens on the selected day; \n7 - to determine the number of patients with this disease; 8 - to make a call statement.\n";
         cin >> number;
         if (cin.fail())
         {
@@ -49,16 +49,16 @@ void enter_patient(sql::Connection* con)
     string str;
 
     pstmt = con->prepareStatement("INSERT INTO patient(name, sex, birthday, adress) VALUES(?,?,?,?)");
-    cout << "Введите имя: ";
+    cout << "Enter name: ";
     getline(cin, str);
     pstmt->setString(1, str);
-    cout << "Введите пол: ";
+    cout << "Enter sex: ";
     getline(cin, str);
     pstmt->setString(2, str);
-    cout << "Введите день рождения: ";
+    cout << "Enter birthday: ";
     getline(cin, str);
     pstmt->setString(3, str);
-    cout << "Введите адрес: ";
+    cout << "Enter adress: ";
     getline(cin, str);
     pstmt->setString(4, str);
     pstmt->execute();
@@ -68,19 +68,19 @@ void enter_patient(sql::Connection* con)
 void enter_medicine(sql::Connection* con)
 {
     sql::PreparedStatement* pstmt;
-    string str, s;
+    string str;
 
     pstmt = con->prepareStatement("INSERT INTO medicine(name, instruction, description, side_effects) VALUES(?,?,?,?)");
-    cout << "Введите название: ";
+    cout << "Enter name: ";
     getline(cin, str);
     pstmt->setString(1, str);
-    cout << "Введите способ применения: ";
+    cout << "Enter instruction: ";
     getline(cin, str);
     pstmt->setString(2, str);
-    cout << "Введите описание: ";
+    cout << "Enter description: ";
     getline(cin, str);
     pstmt->setString(3, str);
-    cout << "Введите побочные эффекты: ";
+    cout << "Enter side effects: ";
     getline(cin, str);
     pstmt->setString(4, str);
     pstmt->execute();
@@ -94,9 +94,9 @@ void side_effect_report(sql::Connection* con)
     string str, query1, buf;
     int number;
     do {
-        cout << "Введите название препарата: ";
+        cout << "Enter name of medicine: ";
         getline(cin, str);
-        query1 = "SELECT COUNT(*) FROM medicine WHERE name =N'" + str + "'";
+        query1 = "SELECT COUNT(*) FROM medicine WHERE name ='" + str + "'";
         stmt = con->createStatement();
         res = stmt->executeQuery(query1);
         while (res->next()) {
@@ -105,8 +105,8 @@ void side_effect_report(sql::Connection* con)
         number = stoi(buf);
         if (!number)
         {
-            cout << "Препарат отсутствует в базе данных.\n";
-            cout << "Закончить выполение функции?(1 - Нет; 2 - Да)\n";
+            cout << "This medicine not in tabel.\n";
+            cout << "Quit from task?(1 - No; 2 - Yes)\n";
             number = enter() - 1;
             if (number == 1) return;
         }
@@ -132,7 +132,7 @@ void enter_appointmens(sql::Connection* con)
     int number;
     pstmt = con->prepareStatement("INSERT INTO appointments(patient_name, doctor_name, date, place, simptoms, diagnose, instructions) VALUES(?,?,?,?,?,?,?)");
     do {
-        cout << "Введите имя пациента: ";
+        cout << "Enter patient name: ";
         getline(cin, str);
         query1 = "SELECT COUNT(*) FROM patient WHERE name ='" + str + "'";
         stmt = con->createStatement();
@@ -152,7 +152,7 @@ void enter_appointmens(sql::Connection* con)
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
-            cout << "Такого пациента нет в базе данный.\nДобавить пациента в базу данных?(1 - Нет; 2 - Да)\n";
+            cout << "This patient not in table.\nAdd patien in tabel?(1 - No; 2 - Yes)\n";
             number = enter();
             if (number == 2)
             {
@@ -161,30 +161,30 @@ void enter_appointmens(sql::Connection* con)
             }
             else
             {
-                cout << "Завершить выполнение функции?(1 - Нет; 2 - Да)\n";
+                cout << "Quit from task?(1 - No; 2 - Yes)\n";
                 number = enter() - 1;
                 if (number == 1) return;
             }
         }
     } while (!number);
     pstmt->setString(1, str);
-    cout << "Введите имя доктора: ";
+    cout << "Enter doctor name: ";
     getline(cin, str);
     pstmt->setString(2, str);
-    cout << "Введите дату: ";
+    cout << "Enter date: ";
     getline(cin, str);
     pstmt->setString(3, str);
-    cout << "Введите место: ";
+    cout << "Enter place: ";
     getline(cin, str);
     pstmt->setString(4, str);
-    cout << "Введите симптомы: ";
+    cout << "Enter simptoms: ";
     getline(cin, str);
     pstmt->setString(5, str);
-    cout << "Введите диагноз: ";
+    cout << "Enter diagnose: ";
     getline(cin, str);
     pstmt->setString(6, str);
     do {
-        cout << "Введите препараты(один за другим): ";
+        cout << "Enter medicine(one by one): ";
         getline(cin, str);
         query1 = "SELECT COUNT(*) FROM medicine WHERE name ='" + str + "'";
         stmt = con->createStatement();
@@ -196,7 +196,7 @@ void enter_appointmens(sql::Connection* con)
         if (number)
         {
             medic += str;
-            cout << "Этот препарат последний?(1 - Нет; 2 - Да)\n";
+            cout << "This medicine is last?(1 - No; 2 - Yes)\n";
             number = (enter()) - 1;
             if (number == 0)
             {
@@ -210,13 +210,13 @@ void enter_appointmens(sql::Connection* con)
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
-            cout << "Этот препарат отсутствует в базе данный.\nДобавить его в базу данных?(1 - Нет; 2 - Да)\n";
+            cout << "This medicine not in table.\nAdd medicine in table?(1 - No; 2 - Yes)\n";
             number = enter();
             if (number == 2)
             {
                 enter_medicine(con);
                 medic += str;
-                cout << "Этот препарат последний?(1 - Нет; 2 - Да)\n";
+                cout << "This medicine is last?(1 - No; 2 - Yes)\n";
                 number = (enter()) - 1;
                 if (number == 0)
                 {
@@ -225,7 +225,7 @@ void enter_appointmens(sql::Connection* con)
             }
             else
             {
-                cout << "Завершить выполнение функции?(1 - Нет; 2 - Да)\n";
+                cout << "Quit from task?(1 - No; 2 - Yes)\n";
                 number = enter() - 1;
             }
         }
@@ -243,13 +243,13 @@ void appointments_in_day(sql::Connection* con)
     sql::ResultSet* res;
     string str, query1;
 
-    cout << "Введите  дату: ";
+    cout << "Enter date: ";
     getline(cin, str);
     query1 = "SELECT COUNT(*) FROM appointments WHERE date='" + str + "' and place != 'hospital'";
     stmt = con->createStatement();
     res = stmt->executeQuery(query1);
     while (res->next()) {
-        cout << "В этот день было совершено " << res->getString("COUNT(*)") << " вызовов.\n\n";
+        cout << "On this day, number of appointments is " << res->getString("COUNT(*)") << "\n\n";
     }
 
     delete stmt;
@@ -262,13 +262,13 @@ void number_of_disease(sql::Connection* con)
     sql::ResultSet* res;
     string str, query1;
 
-    cout << "Введите болезнь: ";
+    cout << "Enter disease: ";
     getline(cin, str);
     query1 = "SELECT COUNT(*) FROM appointments WHERE diagnose='" + str + "'";
     stmt = con->createStatement();
     res = stmt->executeQuery(query1);
     while (res->next()) {
-        cout << "Число пациентов с этой болезнью равно " << res->getString("COUNT(*)") << "\n\n";
+        cout << "Number of patient with this disease is " << res->getString("COUNT(*)") << "\n\n";
     }
 
     delete stmt;
@@ -285,7 +285,7 @@ void call_statement(sql::Connection* con)
     stmt = con->createStatement();
     res = stmt->executeQuery(query1);
     while (res->next()) {
-        cout << "Доктор " << res->getString("doctor_name") << " был на " << res->getString("COUNT(doctor_name)") << " вызовах.\n";
+        cout << "Doctor " << res->getString("doctor_name") << " had " << res->getString("COUNT(doctor_name)") << " appointments.\n";
     }
 
     delete stmt;
@@ -299,8 +299,7 @@ int main()
     sql::Statement* stmt;
     sql::PreparedStatement* pstmt;
     string password;
-    setlocale(LC_ALL, "Russian");
-    cout << "Введите пароль: ";
+    cout << "Enter password: ";
     getline(cin, password);
     try
     {
@@ -309,7 +308,7 @@ int main()
     }
     catch (sql::SQLException e)
     {
-        cout << "Нет подклычения к серверу. Ошибка: " << e.what() << endl;
+        cout << "Could not connect to server. Error message: " << e.what() << endl;
         system("pause");
         exit(1);
     }
@@ -319,28 +318,29 @@ int main()
     stmt->execute("CREATE TABLE IF NOT EXISTS medicine (id serial PRIMARY KEY, name VARCHAR(50), instruction VARCHAR(300), description VARCHAR(300), side_effects VARCHAR(300));");
     stmt->execute("CREATE TABLE IF NOT EXISTS appointments (id serial PRIMARY KEY, patient_name VARCHAR(50), doctor_name VARCHAR(50), date VARCHAR(300), place VARCHAR(300), simptoms VARCHAR(300), diagnose VARCHAR(50), instructions VARCHAR(300));");
     delete stmt;
+
     int number = enter_main();
     while (number != 1)
     {
         switch (number)
         {
         case(2):
-            enter_medicine(con);
+            enter_patient(con);
             break;
         case(3):
-            side_effect_report(con);
+            enter_medicine(con);
             break;
         case(4):
-            enter_patient(con);
+            side_effect_report(con);
             break;
         case(5):
             enter_appointmens(con);
             break;
         case(6):
-            number_of_disease(con);
+            appointments_in_day(con);
             break;
         case(7):
-            appointments_in_day(con);
+            number_of_disease(con);
             break;
         case(8):
             call_statement(con);
@@ -348,6 +348,7 @@ int main()
         }
         number = enter_main();
     }
+
     delete con;
     return 0;
 }
